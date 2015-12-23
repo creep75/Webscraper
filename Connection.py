@@ -62,7 +62,7 @@ class Connection(object):
             session.proxies = proxies
             print('Übergebener proxy: ' + str(session.proxies))
             try:
-               response = session.get('http://canihazip.com/s', proxies = session.proxies, timeout=1)
+               response = session.get('http://api.ipify.org/', proxies = session.proxies, timeout=1)
                returned_ip = response.text
                print('Zurückgegebene IP Adresse: ' + returned_ip)
             except:
@@ -122,10 +122,10 @@ class Connection(object):
         session.headers = self.random_user_agents()
 
         try:
-            response = session.get('http://canihazip.com/s', proxies = session.proxies)
+            response = session.get('http://api.ipify.org/', proxies = session.proxies)
             while not response:
                       session.proxies = self.random_proxies()
-                      response = session.get('http://canihazip.com/s', proxies = session.proxies, timeout=0.001)
+                      response = session.get('http://api.ipify.org/', proxies = session.proxies, timeout=0.001)
             returned_ip = response.text
         finally:
 
