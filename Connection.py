@@ -45,7 +45,7 @@ class Connection(object):
         Es werden folgende Punkte überprüft:
 
         * Ist der Proxy aktiv ?\n
-        * Wird von der Seite 'http://canihazip.com/s' die IP Adresse des Proxies oder die eigene zurückgeliefert ?
+        * Wird von der Seite 'http://api.ipify.org/' die IP Adresse des Proxies oder die eigene zurückgeliefert ?
 
         Wenn er aktiv ist und von der oben genannten Seite die IP des Proxies geliefert wird, gilt er als verwendbar
         und wird in die Datei 'proxylistevalid.txt' geschrieben.
@@ -106,7 +106,7 @@ class Connection(object):
         Gesichtspunkten geprüft:
 
         * Ist der Proxy aktiv ?\n
-        * Wird von der Seite 'http://canihazip.com/s' die IP Adresse des Proxies oder die eigene zurückgeliefert ?
+        * Wird von der Seite 'http://api.ipify.org/' die IP Adresse des Proxies oder die eigene zurückgeliefert ?
 
        Wenn er aktiv ist und von der oben genannten Seite die IP des Proxies geliefert wird, gilt er als verwendbar
        und die Session wird der aufrufenden Stelle retouniert und gilt als verwendbar.
