@@ -24,9 +24,9 @@ class Connection(object):
         Laden des UserAgentsfile\n
         Laden des Proxy Files
         """
-        self.SOURCE_FILE_USERAGENTS='Useragents.txt'
-        self.SOURCE_FILE_PROXIES='Proxyliste3.txt'
-        self.SOURCE_FILE_VALID_PROXIES='Proxylistevalid.txt'
+        self.SOURCE_FILE_USERAGENTS='config/Useragents.txt'
+        self.SOURCE_FILE_PROXIES='config/Proxyliste3.txt'
+        self.SOURCE_FILE_VALID_PROXIES='config/Proxylistevalid.txt'
 
         f = open(self.SOURCE_FILE_USERAGENTS)
         self.agents = f.readlines()
@@ -49,7 +49,7 @@ class Connection(object):
 
         Wenn er aktiv ist und von der oben genannten Seite die IP des Proxies geliefert wird, gilt er als verwendbar
         und wird in die Datei 'proxylistevalid.txt' geschrieben.
-        Diese dient als Ausgangsbasis für das Roundrobin Verfahrens beim tatsächlichen Scrapen
+        Diese dient als Ausgangsbasis für die Auswahl per Zufallsverfahren beim tatsächlichen Scrapen
 
         :rtype: object
         """
@@ -77,8 +77,9 @@ class Connection(object):
 
     def random_proxies(self):
         """
-        Methode zur Auswahl der Proxies per Zufallsgenerator
-        :return: Proxy
+        Methode zur Auswahl der Proxies per Zufallsgenerator.
+        Übernimmt das self.pl Object der Klasse
+        :return: Proxy als dict
         """
         proxies = {
                   'http': self.pl.random().address(),
@@ -90,6 +91,7 @@ class Connection(object):
     def random_user_agents(self):
         """
         Methode zur Auswahl der User Agents per Zufallsgenerator
+        Übernimmt das self.agents Object der Klasse
        :return: User Agent
         """
         return random.choice(self.agents).strip()
@@ -97,15 +99,28 @@ class Connection(object):
 
     def check_proxy(self):
         """
-        Methode zur Überprüfung des Proxies
-        :param session:
+        Methode zur Überprüfung des Proxies (+ Übernahme des Proxies per Zufall + Übernahme des Useragents per Zufall)
+
+        Wird im Zuge des Scrapens angesprochen.
+        Es wird mittels der Methode random_proxies(self) ein Proxy per Zufall ausgewählt und nach folgenden
+        Gesichtspunkten geprüft:
+
+        * Ist der Proxy aktiv ?\n
+        * Wird von der Seite 'http://canihazip.com/s' die IP Adresse des Proxies oder die eigene zurückgeliefert ?
+
+       Wenn er aktiv ist und von der oben genannten Seite die IP des Proxies geliefert wird, gilt er als verwendbar
+       und die Session wird der aufrufenden Stelle retouniert und gilt als verwendbar.
+
+       Zusätzlich wird der Header der Session manipuliert und mittels der Methode random_user_agents(self) ein
+       User Agent per Zufall ausgewählt
+
+        :rtype: session
         """
 
         session = requests.Session()
         session.proxies = self.random_proxies()
         session.headers = self.random_user_agents()
-        randtime = random.randint(0, 1000)/1000
-        sleep(randtime)
+
         try:
             response = session.get('http://canihazip.com/s', proxies = session.proxies)
             while not response:
@@ -114,7 +129,7 @@ class Connection(object):
             returned_ip = response.text
         finally:
 
-               print('Sleep: ' + style.BOLD + str(randtime) + style.END)
+
                print('Der verwendete Proxy ist:' + style.BOLD +  str(session.proxies) + style.END)
                print('Suche: '  + str(session.proxies["http"].find(":")))
 
