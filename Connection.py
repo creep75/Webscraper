@@ -1,31 +1,78 @@
+
+"""Connection Klasse zum grundsätzlichen Aufbau des Connection Objects
+
+Aufbau siehe __init__ Methode
+
+"""
 import requests
 import random
 from proxylist import ProxyList
 from time import sleep
 from style import style
 
-"""Site Connection zum grundsätzlichen Aufbau des Site Objects
 
-Folgende Methoden werden zu Verfügung gestellt...
-
-"""
 
 
 class Connection(object):
     def __init__(self):
 
         """
-        Konstruktor
-        """
-        #self.Url = Url
-        SOURCE_FILE='Useragents.txt'
+        Dies ist der Konstruktor der Connection Klasse
+        Bei der Erstellung des Objektes werden folgende Tätikeiten
+        ausgeführt:\n
 
-        f = open(SOURCE_FILE)
+        Laden des UserAgentsfile\n
+        Laden des Proxy Files
+        """
+        self.SOURCE_FILE_USERAGENTS='Useragents.txt'
+        self.SOURCE_FILE_PROXIES='Proxyliste3.txt'
+        self.SOURCE_FILE_VALID_PROXIES='Proxylistevalid.txt'
+
+        f = open(self.SOURCE_FILE_USERAGENTS)
         self.agents = f.readlines()
 
+        p = open(self.SOURCE_FILE_PROXIES)
+        self.proxyliste = p.readlines()
+
+
         self.pl = ProxyList()
-        self.pl.load_file('C:/Users/creep/PycharmProjects/Testprojekt/Proxyliste3.txt')
+        self.pl.load_file(self.SOURCE_FILE_VALID_PROXIES)
         self.pl.random()
+
+    def check_all_proxies_in_file(self):
+        """Check aller Proxies, welcher in einem File (siehe Variable SOURCE_FILE_PROXIES im Konstruktur) hinterlegt
+        sind.
+        Es werden folgende Punkte überprüft:
+
+        * Ist der Proxy aktiv ?\n
+        * Wird von der Seite 'http://canihazip.com/s' die IP Adresse des Proxies oder die eigene zurückgeliefert ?
+
+        Wenn er aktiv ist und von der oben genannten Seite die IP des Proxies geliefert wird, gilt er als verwendbar
+        und wird in die Datei 'proxylistevalid.txt' geschrieben.
+        Diese dient als Ausgangsbasis für das Roundrobin Verfahrens beim tatsächlichen Scrapen
+
+        :rtype: object
+        """
+        for all_proxies in self.proxyliste:
+            returned_ip = ''
+            session = requests.Session()
+            proxies = {
+                       'http': all_proxies.strip('\n'),
+                         }
+            session.proxies = proxies
+            print('Übergebener proxy: ' + str(session.proxies))
+            try:
+               response = session.get('http://canihazip.com/s', proxies = session.proxies, timeout=1)
+               returned_ip = response.text
+               print('Zurückgegebene IP Adresse: ' + returned_ip)
+            except:
+                pass
+            finally:
+               if returned_ip != '':
+                     print('Rausgeschnittener Proxy: ' + str(session.proxies["http"][0:session.proxies["http"].find(":")]))
+                     if returned_ip == session.proxies["http"][0:session.proxies["http"].find(":")]:
+                        validproxies = open(self.SOURCE_FILE_VALID_PROXIES, 'a')
+                        validproxies.write(all_proxies)
 
 
     def random_proxies(self):
@@ -57,7 +104,6 @@ class Connection(object):
         session = requests.Session()
         session.proxies = self.random_proxies()
         session.headers = self.random_user_agents()
-        #print(session.headers)
         randtime = random.randint(0, 1000)/1000
         sleep(randtime)
         try:

@@ -39,57 +39,96 @@
           <div class="body" role="main">
             
   <h1>Source code for Connection</h1><div class="highlight"><pre>
+
+<span class="sd">&quot;&quot;&quot;Connection Klasse zum grundsätzlichen Aufbau des Connection Objects</span>
+
+<span class="sd">Aufbau siehe __init__ Methode</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">requests</span>
 <span class="kn">import</span> <span class="nn">random</span>
 <span class="kn">from</span> <span class="nn">proxylist</span> <span class="kn">import</span> <span class="n">ProxyList</span>
 <span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">sleep</span>
+<span class="kn">from</span> <span class="nn">style</span> <span class="kn">import</span> <span class="n">style</span>
 
-<span class="sd">&quot;&quot;&quot;Site Connection zum grundsätzlichen Aufbau des Site Objects</span>
 
-<span class="sd">Folgende Methoden werden zu Verfügung gestellt...</span>
-
-<span class="sd">&quot;&quot;&quot;</span>
 
 
 <div class="viewcode-block" id="Connection"><a class="viewcode-back" href="../Connection.html#Connection.Connection">[docs]</a><span class="k">class</span> <span class="nc">Connection</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Connection.__init__"><a class="viewcode-back" href="../Connection.html#Connection.Connection.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
 
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Konstruktor</span>
+<span class="sd">        Dies ist der Konstruktor der Connection Klasse</span>
+<span class="sd">        Bei der Erstellung des Objektes werden folgende Tätikeiten</span>
+<span class="sd">        ausgeführt:\n</span>
+
+<span class="sd">        Laden des UserAgentsfile\n</span>
+<span class="sd">        Laden des Proxy Files</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c">#self.Url = Url</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SOURCE_FILE_USERAGENTS</span><span class="o">=</span><span class="s">&#39;Useragents.txt&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SOURCE_FILE_PROXIES</span><span class="o">=</span><span class="s">&#39;Proxyliste3.txt&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SOURCE_FILE_VALID_PROXIES</span><span class="o">=</span><span class="s">&#39;Proxylistevalid.txt&#39;</span>
+
+        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">SOURCE_FILE_USERAGENTS</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">agents</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+
+        <span class="n">p</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">SOURCE_FILE_PROXIES</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proxyliste</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
 
 
-    <span class="nd">@staticmethod</span>
-<div class="viewcode-block" id="Connection.load_proxies"><a class="viewcode-back" href="../Connection.html#Connection.Connection.load_proxies">[docs]</a>    <span class="k">def</span> <span class="nf">load_proxies</span> <span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pl</span> <span class="o">=</span> <span class="n">ProxyList</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">load_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">SOURCE_FILE_VALID_PROXIES</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">random</span><span class="p">()</span>
 
-<span class="sd">        :return:</span>
+<div class="viewcode-block" id="Connection.check_all_proxies_in_file"><a class="viewcode-back" href="../Connection.html#Connection.Connection.check_all_proxies_in_file">[docs]</a>    <span class="k">def</span> <span class="nf">check_all_proxies_in_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Check aller Proxies, welcher in einem File (siehe Variable SOURCE_FILE_PROXIES im Konstruktur) hinterlegt</span>
+<span class="sd">        sind.</span>
+<span class="sd">        Es werden folgende Punkte überprüft:</span>
+
+<span class="sd">        * Ist der Proxy aktiv ?\n</span>
+<span class="sd">        * Wird von der Seite &#39;http://canihazip.com/s&#39; die IP Adresse des Proxies oder die eigene zurückgeliefert ?</span>
+
+<span class="sd">        Wenn er aktiv ist und von der oben genannten Seite die IP des Proxies geliefert wird, gilt er als verwendbar</span>
+<span class="sd">        und wird in die Datei &#39;proxylistevalid.txt&#39; geschrieben.</span>
+<span class="sd">        Diese dient als Ausgangsbasis für das Roundrobin Verfahrens beim tatsächlichen Scrapen</span>
+
+<span class="sd">        :rtype: object</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">pl</span> <span class="o">=</span> <span class="n">ProxyList</span><span class="p">()</span>
-        <span class="n">pl</span><span class="o">.</span><span class="n">load_file</span><span class="p">(</span><span class="s">&#39;C:/Users/creep/PycharmProjects/Testprojekt/Proxyliste.txt&#39;</span><span class="p">)</span>
-        <span class="n">pl</span><span class="o">.</span><span class="n">random</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">pl</span></div>
+        <span class="c">#new_conn = Connection()</span>
+        <span class="k">for</span> <span class="n">all_proxies</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">proxyliste</span><span class="p">:</span>
+            <span class="n">returned_ip</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+            <span class="n">session</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
+            <span class="n">proxies</span> <span class="o">=</span> <span class="p">{</span>
+                       <span class="s">&#39;http&#39;</span><span class="p">:</span> <span class="n">all_proxies</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">),</span>
+                         <span class="p">}</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">proxies</span> <span class="o">=</span> <span class="n">proxies</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">&#39;Übergebener proxy: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">session</span><span class="o">.</span><span class="n">proxies</span><span class="p">))</span>
+            <span class="k">try</span><span class="p">:</span>
+               <span class="n">response</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;http://canihazip.com/s&#39;</span><span class="p">,</span> <span class="n">proxies</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">proxies</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+               <span class="n">returned_ip</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span>
+               <span class="k">print</span><span class="p">(</span><span class="s">&#39;Zurückgegebene IP Adresse: &#39;</span> <span class="o">+</span> <span class="n">returned_ip</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">pass</span>
+            <span class="k">finally</span><span class="p">:</span>
+               <span class="k">if</span> <span class="n">returned_ip</span> <span class="o">!=</span> <span class="s">&#39;&#39;</span><span class="p">:</span>
+                     <span class="k">print</span><span class="p">(</span><span class="s">&#39;Rausgeschnittener Proxy: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">session</span><span class="o">.</span><span class="n">proxies</span><span class="p">[</span><span class="s">&quot;http&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">:</span><span class="n">session</span><span class="o">.</span><span class="n">proxies</span><span class="p">[</span><span class="s">&quot;http&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;:&quot;</span><span class="p">)]))</span>
+                     <span class="k">if</span> <span class="n">returned_ip</span> <span class="o">==</span> <span class="n">session</span><span class="o">.</span><span class="n">proxies</span><span class="p">[</span><span class="s">&quot;http&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">:</span><span class="n">session</span><span class="o">.</span><span class="n">proxies</span><span class="p">[</span><span class="s">&quot;http&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;:&quot;</span><span class="p">)]:</span>
+                        <span class="n">validproxies</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">SOURCE_FILE_VALID_PROXIES</span><span class="p">,</span> <span class="s">&#39;a&#39;</span><span class="p">)</span>
+                        <span class="n">validproxies</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">all_proxies</span><span class="p">)</span></div>
+        <span class="c">#    return True</span>
 
 
-    <span class="nd">@staticmethod</span>
-<div class="viewcode-block" id="Connection.load_user_agents"><a class="viewcode-back" href="../Connection.html#Connection.Connection.load_user_agents">[docs]</a>    <span class="k">def</span> <span class="nf">load_user_agents</span> <span class="p">():</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-
-<span class="sd">        :return:</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">user_agents</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="s">&#39;Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/600.8.9 (KHTML, like Gecko) Version/8.0.8 Safari/600.8.9&#39;</span><span class="p">,</span>
-        <span class="s">&#39;Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.101 Safari/537.36&#39;</span><span class="p">,</span>
-        <span class="p">]</span>
-        <span class="k">return</span> <span class="bp">True</span></div>
-
-<div class="viewcode-block" id="Connection.random_proxies"><a class="viewcode-back" href="../Connection.html#Connection.Connection.random_proxies">[docs]</a>    <span class="k">def</span> <span class="nf">random_proxies</span><span class="p">(</span><span class="n">pl</span><span class="p">):</span>
+<div class="viewcode-block" id="Connection.random_proxies"><a class="viewcode-back" href="../Connection.html#Connection.Connection.random_proxies">[docs]</a>    <span class="k">def</span> <span class="nf">random_proxies</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Methode zur Auswahl der Proxies per Zufallsgenerator</span>
 <span class="sd">        :return: Proxy</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">pl</span><span class="o">.</span><span class="n">random</span><span class="p">()</span><span class="o">.</span><span class="n">address</span><span class="p">()</span></div>
+        <span class="n">proxies</span> <span class="o">=</span> <span class="p">{</span>
+                  <span class="s">&#39;http&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">random</span><span class="p">()</span><span class="o">.</span><span class="n">address</span><span class="p">(),</span>
+                  <span class="p">}</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&#39;Proxyneu =&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">proxies</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">proxies</span></div>
 
 
 <div class="viewcode-block" id="Connection.random_user_agents"><a class="viewcode-back" href="../Connection.html#Connection.Connection.random_user_agents">[docs]</a>    <span class="k">def</span> <span class="nf">random_user_agents</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -97,24 +136,40 @@
 <span class="sd">        Methode zur Auswahl der User Agents per Zufallsgenerator</span>
 <span class="sd">       :return: User Agent</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">user_agents</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">agents</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="Connection.check_proxy"><a class="viewcode-back" href="../Connection.html#Connection.Connection.check_proxy">[docs]</a>    <span class="k">def</span> <span class="nf">check_proxy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">session</span><span class="p">):</span>
+<div class="viewcode-block" id="Connection.check_proxy"><a class="viewcode-back" href="../Connection.html#Connection.Connection.check_proxy">[docs]</a>    <span class="k">def</span> <span class="nf">check_proxy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Methode zur Überprüfung des Proxies</span>
 <span class="sd">        :param session:</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">session</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
         <span class="n">session</span><span class="o">.</span><span class="n">proxies</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">random_proxies</span><span class="p">()</span>
         <span class="n">session</span><span class="o">.</span><span class="n">headers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">random_user_agents</span><span class="p">()</span>
+        <span class="c">#print(session.headers)</span>
         <span class="n">randtime</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span><span class="o">/</span><span class="mi">1000</span>
         <span class="n">sleep</span><span class="p">(</span><span class="n">randtime</span><span class="p">)</span>
-        <span class="n">response</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;http://canihazip.com/s&#39;</span><span class="p">)</span>
-        <span class="n">returned_ip</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span></div></div>
-        <span class="c">#print(returned_ip)</span>
-        <span class="c">#print(&#39;Sleep: &#39; + style.BOLD + str(randtime) + style.END)</span>
-        <span class="c">#print(&#39;Der verwendete Proxy ist:&#39; + style.BOLD +  session.proxies + style.END)</span>
-        <span class="c">#print(session.headers)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;http://canihazip.com/s&#39;</span><span class="p">,</span> <span class="n">proxies</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">proxies</span><span class="p">)</span>
+            <span class="k">while</span> <span class="ow">not</span> <span class="n">response</span><span class="p">:</span>
+                      <span class="n">session</span><span class="o">.</span><span class="n">proxies</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">random_proxies</span><span class="p">()</span>
+                      <span class="n">response</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;http://canihazip.com/s&#39;</span><span class="p">,</span> <span class="n">proxies</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">proxies</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">0.001</span><span class="p">)</span>
+            <span class="n">returned_ip</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span>
+        <span class="k">finally</span><span class="p">:</span>
+
+               <span class="k">print</span><span class="p">(</span><span class="s">&#39;Sleep: &#39;</span> <span class="o">+</span> <span class="n">style</span><span class="o">.</span><span class="n">BOLD</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">randtime</span><span class="p">)</span> <span class="o">+</span> <span class="n">style</span><span class="o">.</span><span class="n">END</span><span class="p">)</span>
+               <span class="k">print</span><span class="p">(</span><span class="s">&#39;Der verwendete Proxy ist:&#39;</span> <span class="o">+</span> <span class="n">style</span><span class="o">.</span><span class="n">BOLD</span> <span class="o">+</span>  <span class="nb">str</span><span class="p">(</span><span class="n">session</span><span class="o">.</span><span class="n">proxies</span><span class="p">)</span> <span class="o">+</span> <span class="n">style</span><span class="o">.</span><span class="n">END</span><span class="p">)</span>
+               <span class="k">print</span><span class="p">(</span><span class="s">&#39;Suche: &#39;</span>  <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">session</span><span class="o">.</span><span class="n">proxies</span><span class="p">[</span><span class="s">&quot;http&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;:&quot;</span><span class="p">)))</span>
+
+               <span class="k">try</span><span class="p">:</span>
+                   <span class="k">print</span><span class="p">(</span><span class="s">&#39;Returned IP: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">returned_ip</span><span class="p">))</span>
+                   <span class="k">print</span><span class="p">(</span><span class="s">&#39;Proxy Substring&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">session</span><span class="o">.</span><span class="n">proxies</span><span class="p">[</span><span class="s">&quot;http&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">:</span><span class="n">session</span><span class="o">.</span><span class="n">proxies</span><span class="p">[</span><span class="s">&quot;http&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;:&quot;</span><span class="p">)]))</span>
+                   <span class="k">if</span> <span class="n">returned_ip</span> <span class="o">==</span> <span class="n">session</span><span class="o">.</span><span class="n">proxies</span><span class="p">[</span><span class="s">&quot;http&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">:</span><span class="n">session</span><span class="o">.</span><span class="n">proxies</span><span class="p">[</span><span class="s">&quot;http&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;:&quot;</span><span class="p">)]:</span>
+                    <span class="k">return</span> <span class="n">session</span>
+               <span class="k">except</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="bp">False</span></div></div>
 </pre></div>
 
           </div>

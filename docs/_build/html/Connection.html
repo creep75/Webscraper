@@ -39,46 +39,55 @@
             
   <div class="section" id="module-Connection">
 <span id="connection-module"></span><h1>Connection module<a class="headerlink" href="#module-Connection" title="Permalink to this headline">¶</a></h1>
+<p>Connection Klasse zum grundsätzlichen Aufbau des Connection Objects</p>
+<p>Aufbau siehe __init__ Methode</p>
 <dl class="class">
 <dt id="Connection.Connection">
 <em class="property">class </em><code class="descclassname">Connection.</code><code class="descname">Connection</code><a class="reference internal" href="_modules/Connection.html#Connection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Connection.Connection" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
 <dl class="method">
-<dt id="Connection.Connection.check_proxy">
-<code class="descname">check_proxy</code><span class="sig-paren">(</span><em>session</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Connection.html#Connection.check_proxy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Connection.Connection.check_proxy" title="Permalink to this definition">¶</a></dt>
-<dd><p>Methode zur Überprüfung des Proxies
-:param session:</p>
+<dt id="Connection.Connection.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Connection.html#Connection.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Connection.Connection.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dies ist der Konstruktor der Connection Klasse
+Bei der Erstellung des Objektes werden folgende Tätikeiten
+ausgeführt:</p>
+<p>Laden des UserAgentsfile</p>
+<p>Laden des Proxy Files</p>
 </dd></dl>
 
-<dl class="staticmethod">
-<dt id="Connection.Connection.load_proxies">
-<em class="property">static </em><code class="descname">load_proxies</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Connection.html#Connection.load_proxies"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Connection.Connection.load_proxies" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
+<dl class="method">
+<dt id="Connection.Connection.check_all_proxies_in_file">
+<code class="descname">check_all_proxies_in_file</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Connection.html#Connection.check_all_proxies_in_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Connection.Connection.check_all_proxies_in_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check aller Proxies, welcher in einem File (siehe Variable SOURCE_FILE_PROXIES im Konstruktur) hinterlegt
+sind.
+Es werden folgende Punkte überprüft:</p>
+<ul class="simple">
+<li>Ist der Proxy aktiv ?</li>
+<li>Wird von der Seite &#8216;<a class="reference external" href="http://canihazip.com/s">http://canihazip.com/s</a>&#8216; die IP Adresse des Proxies oder die eigene zurückgeliefert ?</li>
+</ul>
+<p>Wenn er aktiv ist und von der oben genannten Seite die IP des Proxies geliefert wird, gilt er als verwendbar
+und wird in die Datei &#8216;proxylistevalid.txt&#8217; geschrieben.
+Diese dient als Ausgangsbasis für das Roundrobin Verfahrens beim tatsächlichen Scrapen</p>
+<table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="staticmethod">
-<dt id="Connection.Connection.load_user_agents">
-<em class="property">static </em><code class="descname">load_user_agents</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Connection.html#Connection.load_user_agents"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Connection.Connection.load_user_agents" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v2.7)">object</a></td>
 </tr>
 </tbody>
 </table>
 </dd></dl>
 
 <dl class="method">
+<dt id="Connection.Connection.check_proxy">
+<code class="descname">check_proxy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Connection.html#Connection.check_proxy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Connection.Connection.check_proxy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Methode zur Überprüfung des Proxies
+:param session:</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="Connection.Connection.random_proxies">
-<code class="descname">random_proxies</code><span class="sig-paren">(</span><em>pl</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Connection.html#Connection.random_proxies"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Connection.Connection.random_proxies" title="Permalink to this definition">¶</a></dt>
+<code class="descname">random_proxies</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Connection.html#Connection.random_proxies"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Connection.Connection.random_proxies" title="Permalink to this definition">¶</a></dt>
 <dd><p>Methode zur Auswahl der Proxies per Zufallsgenerator
 :return: Proxy</p>
 </dd></dl>

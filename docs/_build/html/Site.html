@@ -39,24 +39,42 @@
             
   <div class="section" id="module-Site">
 <span id="site-module"></span><h1>Site module<a class="headerlink" href="#module-Site" title="Permalink to this headline">¶</a></h1>
+<p>Site Class zum grundsätzlichen Aufbau des Site Objects</p>
+<p>Aufbau siehe __init__ Methode</p>
 <dl class="class">
 <dt id="Site.Site">
 <em class="property">class </em><code class="descclassname">Site.</code><code class="descname">Site</code><span class="sig-paren">(</span><em>Name</em>, <em>Url</em>, <em>Encoding</em>, <em>Project</em>, <em>Table</em>, <em>td</em>, <em>href</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Site.html#Site"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Site.Site" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
 <dl class="method">
-<dt id="Site.Site.auszahlen">
-<code class="descname">auszahlen</code><span class="sig-paren">(</span><em>betrag</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Site.html#Site.auszahlen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Site.Site.auszahlen" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="Site.Site.kontostand">
-<code class="descname">kontostand</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Site.html#Site.kontostand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Site.Site.kontostand" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="Site.Site.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>Name</em>, <em>Url</em>, <em>Encoding</em>, <em>Project</em>, <em>Table</em>, <em>td</em>, <em>href</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Site.html#Site.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Site.Site.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ist der Konstruktur</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>Name</strong> &#8211; Name der Site</li>
+<li><strong>Url</strong> &#8211; Url der Site</li>
+<li><strong>Encoding</strong> &#8211; Encoding der Site</li>
+<li><strong>Project</strong> &#8211; um welches Projekt geht es</li>
+<li><strong>Table</strong> &#8211; String des Tables</li>
+<li><strong>td</strong> &#8211; String für td</li>
+<li><strong>href</strong> &#8211; Wie wird ein Link erkannt</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="Site.Site.loadconfig">
 <code class="descname">loadconfig</code><span class="sig-paren">(</span><em>Sitename</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Site.html#Site.loadconfig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Site.Site.loadconfig" title="Permalink to this definition">¶</a></dt>
-<dd><p>Methode zum Laden der Konf</p>
+<dd><p>Methode zum Laden der Konfiguration.
+In späterer Folge kann diese Klasse zum Laden der Konfiguration verwendet werden.
+Derzeit ist sie nur als TODO vorhanden. (vorliegender Scraping Prototyp dient nur zur Verifizierung
+der Round Robin Methode von Proxies und User Agents)</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -72,16 +90,9 @@
 <dl class="method">
 <dt id="Site.Site.scraping">
 <code class="descname">scraping</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Site.html#Site.scraping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Site.Site.scraping" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v2.7)">object</a></td>
-</tr>
-<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ebenen</strong> &#8211; </td>
-</tr>
-</tbody>
-</table>
+<dd><p>Diese Methode wird zum rudimentären Scraping verwendet und dient nur als Demo für die Proxy
+Roundrobin Methode und die User Agents Round Robin Methode
+:rtype: object</p>
 </dd></dl>
 
 </dd></dl>

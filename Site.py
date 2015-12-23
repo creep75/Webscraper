@@ -1,13 +1,14 @@
+"""Site Class zum grundsätzlichen Aufbau des Site Objects
+
+Aufbau siehe __init__ Methode
+
+"""
 from bs4 import BeautifulSoup
 import urllib.request
 from Connection import Connection
 from multiprocessing.dummy import Pool as ThreadPool
 
-"""Site Class zum grundsätzlichen Aufbau des Site Objects
 
-Folgende Methoden werden zu Verfügung gestellt...
-
-"""
 
 
 class Site(object):
@@ -34,25 +35,23 @@ class Site(object):
         self.content = ''
 
     def loadconfig(self, Sitename):
-        """Methode zum Laden der Konf
+        """Methode zum Laden der Konfiguration.
+        In späterer Folge kann diese Klasse zum Laden der Konfiguration verwendet werden.
+        Derzeit ist sie nur als TODO vorhanden. (vorliegender Scraping Prototyp dient nur zur Verifizierung
+        der Round Robin Methode von Proxies und User Agents)
 
         :param Sitename: Name der Site
         :return: Config
         """
-        if self.__Kontostand - betrag < -self.__Kontokorrent:
-            # Deckung nicht genuegend
-            return False
-        else:
-            self.__Kontostand -= betrag
-            ziel.__Kontostand += betrag
-            return True
+        return True
 
     def scraping(self):
 
         """
-
+        Diese Methode wird zum rudimentären Scraping verwendet und dient nur als Demo für die Proxy
+        Roundrobin Methode und die User Agents Round Robin Methode
         :rtype: object
-        :param ebenen:
+
         """
         new_conn = Connection()
         session_new = new_conn.check_proxy()
@@ -65,6 +64,14 @@ class Site(object):
         self.content=soup
         for link in soup.find_all('a', href=True, text=True):
             assert isinstance(link, object)
-            print(link)
+            #print(link)
+            completeLink = self.Url + link['href']
+            print(completeLink)
+            session_new = new_conn.check_proxy()
+            response = session_new.get(completeLink)
+            print(response.text)
+
+
+
 
 
